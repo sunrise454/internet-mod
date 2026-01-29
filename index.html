@@ -9,6 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --accent: #7cff00;
+    }
+
     body {
       margin: 0;
       height: 100vh;
@@ -30,6 +34,12 @@
       font-size: 14px;
       letter-spacing: 2px;
       opacity: 0.6;
+      margin-bottom: 6px;
+    }
+
+    .date {
+      font-size: 11px;
+      opacity: 0.4;
       margin-bottom: 20px;
     }
 
@@ -37,6 +47,7 @@
       font-size: 80px;
       margin-bottom: 20px;
       animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 12px var(--accent));
     }
 
     .mood {
@@ -48,7 +59,7 @@
 
     button {
       background: none;
-      border: 1px solid #ffffff;
+      border: 1px solid var(--accent);
       color: #ffffff;
       padding: 12px 24px;
       font-size: 14px;
@@ -57,17 +68,27 @@
     }
 
     button:hover {
-      background: #ffffff;
+      background: var(--accent);
       color: #0d0d0d;
     }
 
-    @keyframes float {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-      100% { transform: translateY(0); }
+    .daily-note {
+      margin-top: 18px;
+      font-size: 12px;
+      opacity: 0.5;
     }
 
-    /* Маленькая шутка в правом нижнем углу */
+    .yesterday {
+      margin-top: 10px;
+      font-size: 11px;
+      opacity: 0.4;
+      cursor: pointer;
+    }
+
+    .yesterday:hover {
+      opacity: 0.7;
+    }
+
     .footer-easter {
       position: fixed;
       bottom: 10px;
@@ -76,50 +97,77 @@
       opacity: 0.3;
     }
 
-    /* Текст под кнопкой */
-    .daily-note {
-      margin-top: 20px;
-      font-size: 12px;
-      opacity: 0.5;
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- Маленькая шутка -->
   <div class="footer-easter">still online.</div>
 
   <div class="container">
     <h1>TODAY’S INTERNET MOOD</h1>
+    <div class="date" id="today"></div>
+
     <div class="emoji">😵‍💫</div>
-    <div class="mood">
+
+    <div class="mood" id="moodText">
       Everyone is tired,<br>
       but pretending it’s fine.
     </div>
 
-    <button onclick="shareMood()">Share this mood</button>
+    <button id="shareBtn">Share this mood</button>
 
     <div class="daily-note">
       updated daily. unfortunately.
     </div>
+
+    <div class="yesterday" id="yesterday">
+      yesterday felt different
+    </div>
   </div>
 
   <script>
-    function shareMood() {
+    // Цвет дня
+    const accents = ["#7cff00", "#ff3b3b", "#a855f7", "#00e0ff", "#ff8c00"];
+    const dayIndex = new Date().getDate() % accents.length;
+    document.documentElement.style.setProperty("--accent", accents[dayIndex]);
+
+    // Дата
+    const d = new Date();
+    document.getElementById("today").innerText =
+      d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+
+    // Share
+    const btn = document.getElementById("shareBtn");
+    btn.onclick = () => {
       const text = `TODAY'S INTERNET MOOD 😵‍💫
 Everyone is tired, but pretending it’s fine.`;
       navigator.clipboard.writeText(text);
 
-      // Мемная кнопка
-      const btn = document.querySelector("button");
       btn.innerText = "copied. now go be online.";
       setTimeout(() => {
         btn.innerText = "Share this mood";
       }, 2000);
-    }
+    };
+
+    // Fake yesterday (и это смешно)
+    const moods = [
+      "Everyone was confident for no reason.",
+      "Nothing made sense, but people tweeted anyway.",
+      "The internet pretended it was okay.",
+      "Everyone knew something was off."
+    ];
+
+    document.getElementById("yesterday").onclick = () => {
+      const randomMood = moods[Math.floor(Math.random() * moods.length)];
+      document.getElementById("moodText").innerHTML = randomMood;
+    };
   </script>
 
 </body>
 </html>
-
