@@ -9,17 +9,18 @@
 
   <style>
     body {
-      margin: 0;
-      height: 100vh;
-      background: var(--bg);
-      color: #ffffff;
-      font-family: 'Space Grotesk', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      transition: background 0.6s ease;
-    }
+  margin: 0;
+  height: 100vh;
+  background: #0d0d0d; /* ← ВАЖНО */
+  background: var(--bg, #0d0d0d);
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: background 0.6s ease;
+}
 
     .container {
       max-width: 700px;
@@ -103,76 +104,37 @@
 
   <script>
     const moods = [
-      { emoji: "😵‍💫", text: "Everyone is tired,<br>but pretending it’s fine." },
-      { emoji: "🫠", text: "Mentally offline.<br>Physically still here." },
-      { emoji: "😐", text: "Nothing is wrong.<br>That’s the problem." },
-      { emoji: "🤡", text: "Acting productive.<br>Feeling like a joke." },
-      { emoji: "🥲", text: "Trying to relax.<br>Thinking about everything." },
-      { emoji: "🧠", text: "Overthinking something<br>that won’t matter tomorrow." },
-      { emoji: "📉", text: "Emotionally bearish today." }
-    ];
+    { emoji: "😵‍💫", text: "Everyone is tired,<br>but pretending it’s fine." },
+    { emoji: "🫠", text: "Mentally offline.<br>Physically still here." },
+    { emoji: "😐", text: "Nothing is wrong.<br>That’s the problem." }
+  ];
 
-    const backgrounds = [
-      "#0d0d0d",
-      "#111827",
-      "#020617",
-      "#1a1a1a",
-      "#0f172a"
-    ];
+  const backgrounds = ["#0d0d0d", "#111827", "#020617"];
 
-    const emojiEl = document.getElementById("emoji");
-    const moodEl = document.getElementById("moodText");
+  const emojiEl = document.getElementById("emoji");
+  const moodEl = document.getElementById("moodText");
 
-    function setMood(index) {
-      const mood = moods[index];
-      emojiEl.innerText = mood.emoji;
-      moodEl.innerHTML = mood.text;
-      document.documentElement.style.setProperty(
-        "--bg",
-        backgrounds[index % backgrounds.length]
-      );
-    }
+  let index = new Date().getDate() % moods.length;
 
-    // дневной вайб
-    let currentIndex = new Date().getDate() % moods.length;
-    setMood(currentIndex);
+  function render() {
+    emojiEl.textContent = moods[index].emoji;
+    moodEl.innerHTML = moods[index].text;
+    document.body.style.background = backgrounds[index];
+  }
 
-    // КЛИК = НОВЫЙ ВАЙБ
-    document.body.addEventListener("click", (e) => {
-      if (e.target.tagName === "BUTTON") return;
-      currentIndex = (currentIndex + 1) % moods.length;
-      setMood(currentIndex);
-    });
+  render();
 
-    // CRINGE MODE (5 быстрых кликов)
-    let clickCount = 0;
-    let clickTimer;
+  document.body.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON") return;
+    index = (index + 1) % moods.length;
+    render();
+  });
 
-    document.body.addEventListener("click", () => {
-      clickCount++;
-      clearTimeout(clickTimer);
-
-      clickTimer = setTimeout(() => {
-        clickCount = 0;
-      }, 600);
-
-      if (clickCount === 5) {
-        emojiEl.innerText = "🧃";
-        moodEl.innerHTML = "Too online.<br>No recovery available.";
-        document.documentElement.style.setProperty("--bg", "#ff0055");
-      }
-    });
-
-    function shareMood() {
-      const text = `TODAY'S INTERNET MOOD ${emojiEl.innerText}\n${moodEl.innerText}`;
-      navigator.clipboard.writeText(text);
-
-      const btn = document.querySelector("button");
-      btn.innerText = "copied. emotionally.";
-      setTimeout(() => {
-        btn.innerText = "Share this mood";
-      }, 2000);
-    }
+  function shareMood() {
+    navigator.clipboard.writeText(
+      `TODAY'S INTERNET MOOD ${emojiEl.textContent}\n${moodEl.innerText}`
+    );
+  }
   </script>
 
 </body>
